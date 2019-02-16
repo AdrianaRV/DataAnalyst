@@ -10,3 +10,7 @@ where o.OwnerId = 1426
 --Using rental payment amount, rental payment frequency, tenant start date and tenant end date
 --to write a query that returns the sum of all payments from start date to end date.
 --Display the yield.
+--firstpart
+select SUM( pr.amount) as SumPayments
+from Property as p inner join OwnerProperty as o on p.Id = o.PropertyId INNER JOIN PropertyRentalPayment as pr on pr.PropertyId = p.Id inner join TenantProperty tp on tp.PropertyId = p.Id
+where o.OwnerId = 1426 and p.Id = 5597 and pr.Amount = 300 and pr.FrequencyType = 1 and (CAST(tp.StartDate as date) ='2018-01-01' ) and (CAST(tp.EndDate as date) ='2018-12-31' )
