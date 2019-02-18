@@ -1,5 +1,5 @@
 --Display a list of all property names and their property id’s for Owner Id: 1426
-SELECT p.Name
+SELECT p.Name, p.Id
 FROM Property AS p INNER JOIN OwnerProperty AS o ON p.Id = o.PropertyId
 WHERE o.OwnerId = 1426
 --Display the current home value for each property in question a).
@@ -11,6 +11,12 @@ where o.OwnerId = 1426
 --to write a query that returns the sum of all payments from start date to end date.
 --Display the yield.
 --firstpart
-select SUM( pr.amount) as SumPayments
+SELECT SUM( pr.amount) as SumPayments
 from Property as p inner join OwnerProperty as o on p.Id = o.PropertyId INNER JOIN PropertyRentalPayment as pr on pr.PropertyId = p.Id inner join TenantProperty tp on tp.PropertyId = p.Id
 where o.OwnerId = 1426 and p.Id = 5597 and pr.Amount = 300 and pr.FrequencyType = 1 and (CAST(tp.StartDate as date) ='2018-01-01' ) and (CAST(tp.EndDate as date) ='2018-12-31' )
+--Display all the jobs available in the marketplace (jobs that owners have advertised for service suppliers).
+select t.Title
+from TenantJobRequest t left join TenantJobStatus ts on t.JobStatusId = ts.Id
+where ts.Name = 'Open'
+--Display all property names, current tenants first and last names and rental payments
+--per week/ fortnight/month for the properties in question a).
