@@ -20,3 +20,23 @@ from TenantJobRequest t left join TenantJobStatus ts on t.JobStatusId = ts.Id
 where ts.Name = 'Open'
 --Display all property names, current tenants first and last names and rental payments
 --per week/ fortnight/month for the properties in question a).
+SELECT prp.PropertyId , prp.Amount, trp.Name, tp.StartDate, tp.EndDate,
+(CASE
+WHEN prp.FrequencyType = 1
+THEN ((prp.Amount/7) * (DATEDIFF(dd,tp.StartDate, tp.EndDate)+1))
+WHEN prp.FrequencyType = 2
+THEN ((prp.Amount/14) * (DATEDIFF(dd,tp.StartDate, tp.EndDate)+1))
+WHEN prp.FrequencyType = 3
+THEN (prp.Amount * (DATEDIFF(mm,tp.StartDate, tp.EndDate)+1)) END) AS 'Total Amount'
+--If frequency is 1 weekly or 2 forthnightly first I split the amount in days
+--and then multiply for all the days between start and end date
+--If frequency is 3 monthly I multiply for the month between start and end date
+from PropertyRentalPayment prp Inner Join TargetRentType trp ON
+trp.Id = prp.FrequencyType
+Inner Join TenantProperty tp ON tp.PropertyId = prp.PropertyId
+--TargeRentType has the frequencies
+where prp.PropertyId In (select op.PropertyId from OwnerProperty as op,
+Property as P where OwnerId=1426 and op.PropertyId=P.Id)
+--I would do this calculation only if the property Id is included in this query which
+--will bring all the properties for owner 1426
+----------------------
