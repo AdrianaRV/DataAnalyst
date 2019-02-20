@@ -11,15 +11,6 @@ where o.OwnerId = 1426
 --to write a query that returns the sum of all payments from start date to end date.
 --Display the yield.
 --firstpart
-SELECT SUM( pr.amount) as SumPayments
-from Property as p inner join OwnerProperty as o on p.Id = o.PropertyId INNER JOIN PropertyRentalPayment as pr on pr.PropertyId = p.Id inner join TenantProperty tp on tp.PropertyId = p.Id
-where o.OwnerId = 1426 and p.Id = 5597 and pr.Amount = 300 and pr.FrequencyType = 1 and (CAST(tp.StartDate as date) ='2018-01-01' ) and (CAST(tp.EndDate as date) ='2018-12-31' )
---Display all the jobs available in the marketplace (jobs that owners have advertised for service suppliers).
-select t.Title
-from TenantJobRequest t left join TenantJobStatus ts on t.JobStatusId = ts.Id
-where ts.Name = 'Open'
---Display all property names, current tenants first and last names and rental payments
---per week/ fortnight/month for the properties in question a).
 SELECT prp.PropertyId , prp.Amount, trp.Name, tp.StartDate, tp.EndDate,
 (CASE
 WHEN prp.FrequencyType = 1
@@ -39,4 +30,19 @@ where prp.PropertyId In (select op.PropertyId from OwnerProperty as op,
 Property as P where OwnerId=1426 and op.PropertyId=P.Id)
 --I would do this calculation only if the property Id is included in this query which
 --will bring all the properties for owner 1426
-----------------------
+--second part
+--Display the yield.
+SELECT pf.PropertyId,pf.Yield
+FROM PropertyFinance as pf
+where pf.PropertyId In (select op.PropertyId from OwnerProperty as op,
+Property as P where OwnerId=1426 and op.PropertyId=P.Id)
+--Display all the jobs available in the marketplace (jobs that owners have advertised for service suppliers).
+select t.Title
+from TenantJobRequest t left join TenantJobStatus ts on t.JobStatusId = ts.Id
+where ts.Name = 'Open'
+--Display all property names, current tenants first and last names and rental payments
+--per week/ fortnight/month for the properties in question a).
+SELECT p.Id,tp.TenantId,pe.FirstName, pe.LastName, tp.PaymentAmount
+FROM TenantProperty AS tp LEFT JOIN Property AS p on tp.PropertyId = p.Id INNER JOIN Person as pe on tp.Id = pe.Id
+where p.Id In (select op.PropertyId from OwnerProperty as op,
+Property as P where OwnerId=1426 and op.PropertyId=P.Id)
