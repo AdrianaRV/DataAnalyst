@@ -42,7 +42,28 @@ from TenantJobRequest t left join TenantJobStatus ts on t.JobStatusId = ts.Id
 where ts.Name = 'Open'
 --Display all property names, current tenants first and last names and rental payments
 --per week/ fortnight/month for the properties in question a).
-SELECT p.Id,tp.TenantId,pe.FirstName, pe.LastName, tp.PaymentAmount
-FROM TenantProperty AS tp LEFT JOIN Property AS p on tp.PropertyId = p.Id INNER JOIN Person as pe on tp.Id = pe.Id
+SELECT p.Id,tp.TenantId,pe.FirstName, pe.LastName,
+(CASE
+WHEN prp.FrequencyType = 1
+THEN  (prp.Amount)
+WHEN prp.FrequencyType = 2
+THEN (prp.Amount/2)
+WHEN prp.FrequencyType = 3
+THEN (prp.Amount/4)END )AS WeeklyPayment,
+(CASE
+WHEN prp.FrequencyType = 1
+THEN  (prp.Amount*4)
+WHEN prp.FrequencyType = 2
+THEN (prp.Amount)
+WHEN prp.FrequencyType = 3
+THEN (prp.Amount/2) END )AS FortnightlyPayment,
+(CASE
+WHEN prp.FrequencyType = 1
+THEN  (prp.Amount*52)
+WHEN prp.FrequencyType = 2
+THEN (prp.Amount*26)
+WHEN prp.FrequencyType = 3
+THEN (prp.Amount*12)END )AS MonthlyPayment
+FROM TenantProperty AS tp LEFT JOIN Property AS p on tp.PropertyId = p.Id INNER JOIN Person as pe on tp.Id = pe.Id INNER JOIN PropertyRentalPayment as prp on prp.PropertyId = tp.PropertyId
 where p.Id In (select op.PropertyId from OwnerProperty as op,
 Property as P where OwnerId=1426 and op.PropertyId=P.Id)
