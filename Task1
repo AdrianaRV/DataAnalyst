@@ -3,8 +3,8 @@ SELECT p.Name, p.Id
 FROM Property AS p INNER JOIN OwnerProperty AS o ON p.Id = o.PropertyId
 WHERE o.OwnerId = 1426
 --Display the current home value for each property in question a).
-select v.Value
-from Property as p inner join OwnerProperty as o on p.Id = o.PropertyId INNER JOIN PropertyHomeValue AS v on p.Id = v.PropertyId
+SELECT v.Value
+FROM Property AS p INNER JOIN OwnerProperty AS o ON p.Id = o.PropertyId INNER JOIN PropertyHomeValue AS v ON p.Id = v.PropertyId
 where o.OwnerId = 1426
 --For each property in question a), return the following:
 --Using rental payment amount, rental payment frequency, tenant start date and tenant end date
@@ -22,24 +22,24 @@ THEN (prp.Amount * (DATEDIFF(mm,tp.StartDate, tp.EndDate)+1)) END) AS 'Total Amo
 --If frequency is 1 weekly or 2 forthnightly first I split the amount in days
 --and then multiply for all the days between start and end date
 --If frequency is 3 monthly I multiply for the month between start and end date
-from PropertyRentalPayment prp Inner Join TargetRentType trp ON
+FROM PropertyRentalPayment prp INNER JOIN TargetRentType trp ON
 trp.Id = prp.FrequencyType
-Inner Join TenantProperty tp ON tp.PropertyId = prp.PropertyId
+INNER JOIN TenantProperty tp ON tp.PropertyId = prp.PropertyId
 --TargeRentType has the frequencies
-where prp.PropertyId In (select op.PropertyId from OwnerProperty as op,
-Property as P where OwnerId=1426 and op.PropertyId=P.Id)
+WHERE prp.PropertyId IN (SELECT op.PropertyId FROM OwnerProperty AS op,
+Property AS P WHERE OwnerId=1426 AND op.PropertyId=P.Id)
 --I would do this calculation only if the property Id is included in this query which
 --will bring all the properties for owner 1426
 --second part
 --Display the yield.
 SELECT pf.PropertyId,pf.Yield
-FROM PropertyFinance as pf
-where pf.PropertyId In (select op.PropertyId from OwnerProperty as op,
-Property as P where OwnerId=1426 and op.PropertyId=P.Id)
+FROM PropertyFinance AS pf
+WHERE pf.PropertyId IN (SELECT op.PropertyId FROM OwnerProperty AS op,
+Property AS P WHERE OwnerId=1426 AND op.PropertyId=P.Id)
 --Display all the jobs available in the marketplace (jobs that owners have advertised for service suppliers).
-select t.Title
-from TenantJobRequest t left join TenantJobStatus ts on t.JobStatusId = ts.Id
-where ts.Name = 'Open'
+SELECT t.Title
+FROM TenantJobRequest t LEFT JOIN TenantJobStatus ts ON t.JobStatusId = ts.Id
+WHERE ts.Name = 'Open'
 --Display all property names, current tenants first and last names and rental payments
 --per week/ fortnight/month for the properties in question a).
 SELECT p.Id,tp.TenantId,pe.FirstName, pe.LastName,
@@ -65,5 +65,5 @@ THEN (prp.Amount*26)
 WHEN prp.FrequencyType = 3
 THEN (prp.Amount*12)END )AS MonthlyPayment
 FROM TenantProperty AS tp LEFT JOIN Property AS p on tp.PropertyId = p.Id INNER JOIN Person as pe on tp.Id = pe.Id INNER JOIN PropertyRentalPayment as prp on prp.PropertyId = tp.PropertyId
-where p.Id In (select op.PropertyId from OwnerProperty as op,
-Property as P where OwnerId=1426 and op.PropertyId=P.Id)
+WHERE p.Id IN (SELECT op.PropertyId FROM OwnerProperty AS op,
+Property AS P WHERE OwnerId=1426 AND op.PropertyId=P.Id)
